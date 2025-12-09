@@ -259,7 +259,7 @@ end
 
 % Function to draw state transitions
 function drawStateTransitions(state_space, state_update, state_two_dimension_new, episode_length)
-    for i = 1:episode_length - 1
+    for i = 1:episode_length - 1  % 如果一个路径被走的很多，我们期望它被画的更粗，这就是用随机数的原因
         if state_two_dimension_new(state_update(i), 2) ~= state_two_dimension_new(state_update(i + 1), 2)       
             line([state_two_dimension_new(state_update(i), 1) + 0.5, state_two_dimension_new(state_update(i), 1) + 0.5 + 0.03 * randn(1), state_two_dimension_new(state_update(i + 1), 1) + 0.5 + 0.03 * randn(1), state_two_dimension_new(state_update(i + 1), 1) + 0.5], ...
                  [state_two_dimension_new(state_update(i), 2) + 0.5, state_two_dimension_new(state_update(i), 2) + 0.25 + 0.03 * randn(1), state_two_dimension_new(state_update(i + 1), 2) + 0.75 + 0.03 * randn(1), state_two_dimension_new(state_update(i + 1), 2) + 0.5], ...

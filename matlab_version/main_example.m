@@ -1,5 +1,5 @@
 % by the Intelligent Unmanned Systems Laboratory, Westlake University, 2024
-
+% 该框架只能用在书本的网格世界中。对于更一般形式的用树表示的拓扑关系不适用；尤其是该框架下状态转移是确定的。
 clear 
 close all
 
@@ -10,7 +10,7 @@ obstacle_state = [1, 3; 2, 1; 1, 2];
 x_length = 3;
 y_length = 4;
 state_space = x_length * y_length;     % 状态个数
-state=1:state_space;
+state=1:state_space;         % 纯为了在网格上标注名字
 state_value=ones(state_space,1);
 
 reward_forbidden = -1;
@@ -45,7 +45,7 @@ policy(7,3)=0 ; policy(7,4)= 0; policy(7,2)= 0; policy(7,1)= 0; policy(7,5)= 1; 
 % Initialize the episode
 episode_length = 1000;
 
-state_history = zeros(episode_length, 2); 
+state_history = zeros(episode_length, 2);   % 状态历史的坐标
 reward_history = zeros(episode_length, 1);  
 
 % Set the initial state
@@ -64,6 +64,7 @@ figure_plot(x_length, y_length, agent_state, final_state, obstacle_state, state_
 
 %%   useful function 
 function [new_state, reward] = next_state_and_reward(state, action, x_length, y_length, target_state, obstacle_state, reward_forbidden, reward_target, reward_step)
+    % 在state下执行action。检查是否到达target_state；是否到obstacle_state，如果是则扣分，并呆在该状态；检查是否撞墙，如果撞墙则弹回并扣分。
     new_x = state(1) + action(1);
     new_y = state(2) + action(2);
     new_state = [new_x, new_y];
@@ -85,9 +86,10 @@ function [new_state, reward] = next_state_and_reward(state, action, x_length, y_
 end
 
 function action = stochastic_policy(state, action_space, policy, x_length, y_length)
+    % 模仿一步随机过程。在state下，从动作空间action_space中按照policy获取一个具体的action。
     % Extract the action space and policy for a specific state
-    state_1d = x_length * (state(2)-1) + state(1); 
-    actions = action_space{state_1d};
+    state_1d = x_length * (state(2)-1) + state(1);   % 转到s_i编号的状态
+    actions = action_space{state_1d};                % 第i个status可以做的动作
     policy_i = policy(state_1d, :);
 
     % Ensure the sum of policy probabilities is 1
