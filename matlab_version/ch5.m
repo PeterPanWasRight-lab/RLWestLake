@@ -63,7 +63,7 @@ for step = 1:episode_length
             siy = ceil(si/x_length);
             six = si-(siy-1)*x_length;
             for ai = 1:length(actions)
-                qan(ai)=q_pi([six,siy], action_space{si}{ai}, x_length, y_length, final_state, obstacle_state, reward_forbidden, reward_target, reward_step, gamma, state_value);
+                % qan(ai)=q_pi([six,siy], action_space{si}{ai}, x_length, y_length, final_state, obstacle_state, reward_forbidden, reward_target, reward_step, gamma, state_value);
                 q(ai)=q_pi_iter([six,siy], action_space{si}{ai}, x_length, y_length, final_state, obstacle_state, reward_forbidden, reward_target, reward_step, gamma, action_space,policy);
             end
             state_value_new(si) = policy(si,:)*q';
@@ -109,9 +109,8 @@ function q=q_pi_iter(state, action, x_length, y_length, target_state, obstacle_s
             [new_state, reward_future] = next_state_and_reward(new_state, action, x_length, y_length, target_state, obstacle_state, reward_forbidden, reward_target, reward_step);
             reward_future_recorder = reward_future_recorder + gamma^iter_deepth*reward_future;
         end
-        ErewardFuture = reward_future_recorder/n;
     end
-    
+    ErewardFuture = reward_future_recorder/n;
     q = reward_intime + ErewardFuture;
 end
 
