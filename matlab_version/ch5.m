@@ -9,11 +9,17 @@ close all
 % x_length = 5;
 % y_length = 5;
 % Initialize environment parameters
+% agent_state = [1, 1];
+% final_state = [2, 2];
+% obstacle_state = [1,2];
+% x_length = 2;
+% y_length = 2;
+% Initialize environment parameters
 agent_state = [1, 1];
-final_state = [2, 2];
-obstacle_state = [1,2];
-x_length = 2;
-y_length = 2;
+final_state = [3, 3];
+obstacle_state = [1,2;3,2];
+x_length = 3;
+y_length = 3;
 
 gamma = 0.9;
 state_space = x_length * y_length;     % 状态个数
@@ -107,7 +113,7 @@ figure,plot([0:episode_length-1],state_value_history) %[output:4a92d072]
 
 % 初始化参数
 episode_count = 100;  % 总回合数
-Tlength = 30000;  % 最大回合长度
+Tlength = 300000;  % 最大回合长度   不够长不收敛
 gamma = 0.9;
 
 % 初始化数据结构
