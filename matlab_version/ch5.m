@@ -9,17 +9,17 @@ close all
 % x_length = 5;
 % y_length = 5;
 % Initialize environment parameters
-% agent_state = [1, 1];
-% final_state = [2, 2];
-% obstacle_state = [1,2];
-% x_length = 2;
-% y_length = 2;
-% Initialize environment parameters
 agent_state = [1, 1];
-final_state = [3, 3];
-obstacle_state = [1,2;3,2];
-x_length = 3;
-y_length = 3;
+final_state = [2, 2];
+obstacle_state = [1,2];
+x_length = 2;
+y_length = 2;
+% Initialize environment parameters
+% agent_state = [1, 1];
+% final_state = [3, 3];
+% obstacle_state = [1,2;3,2];
+% x_length = 3;
+% y_length = 3;
 
 gamma = 0.9;
 state_space = x_length * y_length;     % 状态个数
@@ -113,8 +113,8 @@ figure,plot([0:episode_length-1],state_value_history) %[output:4a92d072]
 % MC Exploring Starts 算法实现
 tic
 % 初始化参数
-episode_count = 10000;  % 总回合数
-Tlength = 300000;  % 最大回合长度   不够长不收敛  最终出图时，价值很多都是0的情况，一般是回合不够长
+episode_count = 1000;  % 总回合数
+Tlength = 30000;  % 最大回合长度   不够长不收敛  最终出图时，价值很多都是0的情况，一般是回合不够长
 gamma = 0.9;
 
 % 初始化数据结构
@@ -125,6 +125,7 @@ Q = zeros(state_space, number_of_action);       % 动作价值函数
 
 % 初始策略：均匀随机策略
 policy = ones(state_space, number_of_action) * (1/number_of_action);
+policy(2,:) = [1 0 0 0 0 ];
   
 % 主循环
 for episode = 1:episode_count
@@ -174,9 +175,10 @@ for episode = 1:episode_count
     end
 
     % 初始化累积回报   每条轨迹相互独立，分开计算时需要每次清零G Return Number
+    % 可以这样测试：固定一个策略不变（删掉策略更新的部分）然后分别测试R和N清零/不清零的情况，对比得到的状态价值
     G = 0;
-    % Return = zeros(state_space, number_of_action);  % 累计回报
-    % Number = zeros(state_space, number_of_action);  % 访问次数
+    Return = zeros(state_space, number_of_action);  % 累计回报
+    Number = zeros(state_space, number_of_action);  % 访问次数
 
     % 反向遍历回合中的每一步（首次访问型MC）
     % visited_pairs = zeros(state_space, number_of_action);  % 标记是否已访问
@@ -224,20 +226,20 @@ for episode = 1:episode_count
         % end
         %%%%%%%%%%%%% debug %%%%%%%%%%%
         % % 在循环外进行策略更新更容易收敛
-        for si = 1:state_space
-            % [qmax, action_index] = max(si_q(si,:));  % 也可以用迭代完后的状态值再算一遍每一个状态对应的动作值
-
-            % siy = ceil(si/x_length);
-            % six = si-(siy-1)*x_length;
-            % parfor ai = 1:length(actions)
-            %     q(ai)=q_pi_iter([six,siy], action_space{si}{ai}, x_length, y_length, final_state, obstacle_state, reward_forbidden, reward_target, reward_step, gamma, action_space,policy);
-            % end
-            % si_q(si,:) = q;
-
-            [qmax, action_index] = max(Q(si,:));
-            policy(si,:) = 0;
-            policy(si,action_index) = 1;
-        end
+        % for si = 1:state_space
+        %     % [qmax, action_index] = max(si_q(si,:));  % 也可以用迭代完后的状态值再算一遍每一个状态对应的动作值
+        % 
+        %     % siy = ceil(si/x_length);
+        %     % six = si-(siy-1)*x_length;
+        %     % parfor ai = 1:length(actions)
+        %     %     q(ai)=q_pi_iter([six,siy], action_space{si}{ai}, x_length, y_length, final_state, obstacle_state, reward_forbidden, reward_target, reward_step, gamma, action_space,policy);
+        %     % end
+        %     % si_q(si,:) = q;
+        % 
+        %     [qmax, action_index] = max(Q(si,:));
+        %     policy(si,:) = 0;
+        %     policy(si,action_index) = 1;
+        % end
 end
 toc
 % 显示最终结果
