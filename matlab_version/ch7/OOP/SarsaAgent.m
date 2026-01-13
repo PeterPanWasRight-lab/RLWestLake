@@ -1,5 +1,5 @@
 classdef SarsaAgent < handle
-    % SarsaAgent: 负责Q表维护和动作选择
+    % SarsaAgent: 负责 Q 表维护、动作选择和参数衰减
     
     properties
         Q_Table         % State x Action matrix
@@ -7,6 +7,10 @@ classdef SarsaAgent < handle
         Gamma           % Discount factor
         Epsilon         % Exploration rate
         Num_Actions
+        
+        % 新增属性用于衰减控制
+        Epsilon_Min     % 最小探索率
+        Epsilon_Decay   % 衰减系数 (例如 0.99)
     end
     
     methods
@@ -16,29 +20,30 @@ classdef SarsaAgent < handle
             obj.Alpha = alpha;
             obj.Gamma = gamma;
             obj.Epsilon = epsilon;
+            
+            % 默认衰减参数 (如果不手动设置，默认每次衰减 0.5%)
+            obj.Epsilon_Min = 0.01;
+            obj.Epsilon_Decay = 0.995; 
         end
         
         function action_idx = choose_action(obj, state_idx)
-            % 对应 stochastic_policy.m 的逻辑，但改为 Epsilon-Greedy
+            % Epsilon-Greedy 策略
             
-            % 1. 生成概率分布 (类似 stochastic_policy 中的 policy_i)
+            % 1. 生成基础概率分布
             policy_probs = ones(1, obj.Num_Actions) * (obj.Epsilon / obj.Num_Actions);
             
-            % 找到最优动作
+            % 2. 找到最优动作并增加其概率
             [~, best_a] = max(obj.Q_Table(state_idx, :));
-            
-            % 增加最优动作的概率
             policy_probs(best_a) = policy_probs(best_a) + (1 - obj.Epsilon);
             
-            % 2. 采样 (类似 randsrc 的功能)
-            % randsrc(1, 1, [1:length; probs]) 的手动实现
+            % 3. 轮盘赌采样
             r = rand();
             cumulative_probs = cumsum(policy_probs);
             action_idx = find(r <= cumulative_probs, 1, 'first');
         end
         
         function update(obj, s, a, r, s_next, a_next)
-            % Sarsa 更新: Q(s,a) = Q(s,a) + alpha * [r + gamma * Q(s',a') - Q(s,a)]
+            % Sarsa 更新: Q(s,a) += alpha * [r + gamma * Q(s',a') - Q(s,a)]
             current_q = obj.Q_Table(s, a);
             next_q = obj.Q_Table(s_next, a_next);
             
@@ -53,6 +58,12 @@ classdef SarsaAgent < handle
             current_q = obj.Q_Table(s, a);
             td_error = r - current_q;
             obj.Q_Table(s, a) = current_q + obj.Alpha * td_error;
+        end
+
+        % [修复] 补全了缺失的 decay_epsilon 方法
+        function decay_epsilon(obj)
+            % 将 epsilon 乘以衰减系数，但不低于最小值
+            obj.Epsilon = max(obj.Epsilon_Min, obj.Epsilon * obj.Epsilon_Decay);
         end
 
         function [V, Policy] = get_results(obj)
