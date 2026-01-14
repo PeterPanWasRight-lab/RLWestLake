@@ -25,8 +25,8 @@ classdef PolicyIterationAgent < handle
             obj.PE_Length = pe_len;
             
             obj.V_Table = zeros(num_states, 1);
-            obj.Q_Table = zeros(num_states, num_actions);
-            obj.Policy = ones(num_states, 1); 
+            obj.Q_Table = zeros(num_states, num_actions);   % only GridWorld可用的形式，其他带概率选择的环境不可用这种数据结构
+            obj.Policy = ones(num_states, 1);   % 随便给的
         end
         
         function train(obj, env)

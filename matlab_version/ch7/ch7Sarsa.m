@@ -111,6 +111,7 @@ figure,plot([0:episode_length-1],state_value_history) %[output:1e589178]
 %%
 %[text] ## Sarsa
 % Sarsa ε-greedy 算法实现  deepseek写的
+% 对于网格世界而言，当α=1时，TD(0)算法就是贝尔曼自举（策略评价）！对于其他复杂的世界并非如此！
 tic
 % 初始化参数
 % 注释掉break那一段就可以跑出稳定收敛的状态值
