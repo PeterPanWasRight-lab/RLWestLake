@@ -179,8 +179,86 @@ classdef GridWorld < handle
             obj.draw_agent(obj.Start_State);
             title(['Aggregated Transitions (' num2str(length(histories)) ' Episodes)']);
         end
+
+        % 3. [核心重构] 根据 figure_policy.m 改写的概率策略绘图
+        function plot_policy_matrix(obj, policy_matrix)
+            % policy_matrix: (State_Size x Action_Size)
+            
+            figure('Name', 'Probabilistic Policy', 'Color', 'w'); 
+            
+            % 1. 绘制坐标轴标签 (addAxisLabels)
+            obj.setup_axes(); 
+            
+            % 2. 绘制网格背景
+            obj.draw_background_grid();
+            
+            % 3. 绘制静态元素 (障碍物/终点)
+            obj.draw_static_elements();
+            
+            num_actions = length(obj.Action_Space);
+            ratio = 0.5; % adjust the length of arrow
+            
+            for s = 1:obj.State_Space_Size
+                coord = obj.idx2coord(s);
+                [px, py] = obj.get_plot_coord(coord(1), coord(2));
+                
+                % 中心点坐标 (i_bias, j_bias)
+                cx = px + 0.5; 
+                cy = py + 0.5;
+                
+                % 写状态编号 (s1, s2...)
+                text(px + 0.1, py + 0.8, ['s', num2str(s)], 'FontSize', 8, 'Color', [.5 .5 .5]);
+                
+                % 跳过终点和障碍物 (可选，如果不想在这些地方画箭头)
+                if isequal(coord, obj.Final_State), continue; end
+                
+                % 获取当前状态的动作概率分布
+                probs = policy_matrix(s, :);
+                
+                % 遍历所有动作 (kk)
+                for kk = 1:num_actions
+                    prob = probs(kk);
+                    
+                    % 只有概率不为0时才绘制 (参考: if policy(...) ~= 0)
+                    if prob > 0.001 
+                        % [Ref] kk_new calculation from figure_policy.m
+                        % 将概率映射到 [0.5, 1.0] 的尺寸区间
+                        kk_new = prob / 2 + 0.5;
+                        
+                        action_vec = obj.Action_Space{kk};
+                        
+                        % [Ref] drawPolicyArrow logic
+                        if action_vec(1) == 0 && action_vec(2) == 0
+                            % Stay: Draw Circle
+                            % MarkerSize = 5 + kk_new * 6
+                            marker_size = 5 + kk_new * 6;
+                            plot(cx, cy, 'o', 'MarkerSize', marker_size, 'LineWidth', 2, 'Color', obj.Color_Green);
+                        else
+                            % Move: Draw Arrow
+                            % Position: [cx, cy, ratio * kk_new * ax, -ratio * kk_new * ay]
+                            % 注意 dy 的负号，这是为了适配 Y 轴反转
+                            dx = ratio * kk_new * action_vec(1);
+                            dy = -ratio * kk_new * action_vec(2); 
+                            
+                            ar = annotation('arrow', ...
+                                'Position', [cx, cy, dx, dy], ...
+                                'LineStyle', '-', ...
+                                'Color', obj.Color_Green, ...
+                                'LineWidth', 2);
+                            ar.Parent = gca;
+                        end
+                    end
+                end
+            end
+            
+            % 4. 绘制 Agent
+            obj.draw_agent(obj.Start_State);
+            title('Policy Visualization');
+        end
+
     end
-    
+ 
+
     methods (Access = private)
         function [px, py] = get_plot_coord(obj, lx, ly), px = lx; py = obj.Y_Length + 1 - ly; end
         function setup_axes(obj), axis equal; axis off; hold on; axis([0.5, obj.X_Length + 1.5, 0.5, obj.Y_Length + 1.5]); end
