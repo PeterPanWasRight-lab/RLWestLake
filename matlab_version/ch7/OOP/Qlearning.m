@@ -16,7 +16,7 @@ classdef Qlearning < handle
         
         % 训练记录 (用于绘制曲线)
         History_Reward
-        History_Steps
+        History_Steps    % 每个epsilon走了多少步到达target
         History_Error
     end
     
@@ -31,11 +31,12 @@ classdef Qlearning < handle
             obj.Algorithm_Mode = mode;
             
             % 默认衰减参数
-            obj.Epsilon_Decay = 0.995; 
+            obj.Epsilon_Decay = 0.999; 
             obj.Epsilon_Min = 0.01;
         end
         
         function train(obj, env, episodes, max_steps, true_V)
+            % max_steps防止一直找不到target时无限循环。另外注释掉终点判断可以让所有回合都跑max_steps，用于世界探索
             % 初始化记录数组
             obj.History_Reward = zeros(episodes, 1);
             obj.History_Steps = zeros(episodes, 1);
@@ -61,7 +62,8 @@ classdef Qlearning < handle
                     % 算法 7.2: 使用当前的 \epsilon-Greedy 策略
                     curr_a = obj.choose_action_epsilon_greedy(curr_s);
                 end
-                
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                % 这里采用的和环境一边交互一边拿数据的OffPolicy方法，实际上也可以先按照随机策略pi把整个轨迹都生成好，然后一次性跑完
                 total_r = 0;
                 
                 for step = 1:max_steps
