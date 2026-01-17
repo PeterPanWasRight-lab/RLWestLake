@@ -98,5 +98,68 @@ classdef PolicyIterationAgent < handle
             V = obj.V_Table;
             PolicyIdx = obj.Policy;
         end
+                
+        function V_epsilon = evaluate_epsilon_greedy_policy(obj, env, epsilon, num_iterations)
+            % evaluate_epsilon_greedy_policy: 计算在特定ε-greedy策略下的状态价值
+            % 输入:
+            %   env - 环境对象
+            %   epsilon - ε值（探索率）
+            %   num_iterations - 迭代次数
+            % 输出:
+            %   V_epsilon - ε-greedy策略下的状态价值
+            
+            % 初始化价值表
+            V_epsilon = zeros(obj.Num_States, 1);
+            
+            fprintf('开始ε-greedy策略评估 (ε = %.2f)...\n', epsilon);
+            
+            for iter = 1:num_iterations
+                V_new = zeros(obj.Num_States, 1);
+                
+                for si = 1:obj.Num_States
+                    % 获取当前状态下的所有动作的Q值
+                    q_values = zeros(1, obj.Num_Actions);
+                    for ai = 1:obj.Num_Actions
+                        [s_next, r, ~] = env.step(si, ai);
+                        q_values(ai) = r + obj.Gamma * V_epsilon(s_next);
+                    end
+                    
+                    % ε-greedy策略下的期望价值
+                    % 以(1-ε)的概率选择当前策略动作，以ε的概率随机选择其他动作
+                    current_action = obj.Policy(si);
+                    expected_value = 0;
+                    
+                    for ai = 1:obj.Num_Actions
+                        if ai == current_action
+                            % 选择当前策略动作的概率: (1-ε) + ε/Num_Actions
+                            probability = (1 - epsilon) + (epsilon / obj.Num_Actions);
+                        else
+                            % 选择其他动作的概率: ε/Num_Actions
+                            probability = epsilon / obj.Num_Actions;
+                        end
+                        
+                        expected_value = expected_value + probability * q_values(ai);
+                    end
+                    
+                    V_new(si) = expected_value;
+                end
+                
+                % 检查收敛
+                max_diff = max(abs(V_new - V_epsilon));
+                if max_diff < 1e-6
+                    fprintf('  迭代 %d: 已收敛 (最大变化: %.6f)\n', iter, max_diff);
+                    V_epsilon = V_new;
+                    break;
+                end
+                
+                V_epsilon = V_new;
+                
+                if mod(iter, 100) == 0
+                    fprintf('  迭代 %d: 最大变化 = %.6f\n', iter, max_diff);
+                end
+            end
+            
+            fprintf('ε-greedy策略评估完成！\n');
+        end
     end
 end

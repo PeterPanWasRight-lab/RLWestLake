@@ -51,7 +51,7 @@ classdef Qlearning < handle
             obj.Q_Table(target_idx, :) = target_val;
             
             for ep = 1:episodes
-                curr_s = env.coord2idx(env.Start_State);
+                curr_s = env.coord2idx(env.Start_State);  % 每一个回合都从给定的起点开始
                 
                 % --- 1. 初始动作选择 ---
                 if strcmp(obj.Algorithm_Mode, '7.3_off_policy')
