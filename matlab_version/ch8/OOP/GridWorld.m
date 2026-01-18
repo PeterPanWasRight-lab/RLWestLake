@@ -44,12 +44,12 @@ classdef GridWorld < handle
             % 1. 吸收态逻辑 (Absorbing State)  
             % 对于Sarsa类似的算法，用这个逻辑代替4.可以显著提升收敛效果和最终状态值的准确程度
             % 一个是到达重点后直接站着不动了，另外一个是到达终点后还会进行随机探索
-            if isequal(current_state, obj.Final_State)
-                next_state_idx = current_state_idx;
-                reward = obj.Reward_Target;
-                is_done = true;
-                return;
-            end
+            % if isequal(current_state, obj.Final_State)
+            %     next_state_idx = current_state_idx;
+            %     reward = obj.Reward_Target;
+            %     is_done = true;
+            %     return;
+            % end
             
             action = obj.Action_Space{action_idx};
             new_state = current_state + action;

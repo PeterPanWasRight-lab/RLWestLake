@@ -137,7 +137,7 @@ classdef PolicyIterationAgent < handle
                             % 选择其他动作的概率: ε/Num_Actions
                             probability = epsilon / obj.Num_Actions;
                         end
-                        
+                        % probability = 0.2;
                         expected_value = expected_value + probability * q_values(ai);
                     end
                     
@@ -146,11 +146,11 @@ classdef PolicyIterationAgent < handle
                 
                 % 检查收敛
                 max_diff = max(abs(V_new - V_epsilon));
-                if max_diff < 1e-6
-                    fprintf('  迭代 %d: 已收敛 (最大变化: %.6f)\n', iter, max_diff);
-                    V_epsilon = V_new;
-                    break;
-                end
+                % if max_diff < 1e-6
+                %     fprintf('  迭代 %d: 已收敛 (最大变化: %.6f)\n', iter, max_diff);
+                %     V_epsilon = V_new;
+                %     break;
+                % end
                 
                 V_epsilon = V_new;
                 
