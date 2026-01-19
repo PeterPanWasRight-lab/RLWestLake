@@ -435,6 +435,10 @@ classdef GridWorld < handle
             % 调整视角，确保所有元素可见
             axis tight;
         end
+        function [x_len, y_len] = get_grid_size(obj)
+            x_len = obj.X_Length;
+            y_len = obj.Y_Length;
+        end
 
     end
  
