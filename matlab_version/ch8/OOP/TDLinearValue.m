@@ -31,6 +31,8 @@ classdef TDLinearValue < handle
                 case 'quadratic'
                     obj.phi_func = @(x, y) [1; x; y; x^2; y^2; x*y];
                     obj.dim = 6;
+                    % obj.phi_func = @(x, y) [1; x; y; x^2; y^2; x*y; x^3; y^3; x^2*y; x*y^2];
+                    % obj.dim = 10;
                 case 'custom'
                     obj.phi_func = @(x, y) [1; x; y; sin(pi*x/5); sin(pi*y/5)];
                     obj.dim = 5;
