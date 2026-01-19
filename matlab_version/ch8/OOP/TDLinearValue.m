@@ -46,11 +46,11 @@ classdef TDLinearValue < handle
         function train(obj, episodes)
             if nargin < 2, episodes = 450000; end
             
-            local_omega = obj.omega;
+            local_omega = obj.omega;  %局部变量的访问比访问obj.omega要快。在下面的循环中可以提速
             local_gamma = obj.gamma;
             phi_f = obj.phi_func;
             
-            obj.omega_history = zeros(obj.dim, episodes);
+            obj.omega_history = zeros(obj.dim, episodes);  % 预申请内存，切勿使用 obj.omega_history = [obj.omega_history; omega_new]导致内存申请缓慢
             siCoord = obj.env.Start_State;
             alpha = 0.01; 
             
@@ -97,7 +97,7 @@ classdef TDLinearValue < handle
             obj.omega = local_omega;
         end
         
-        %% --- 动作选择函数 (按您的要求编写) ---
+        %% --- 动作选择函数 ---
         function a_idx = choose_action(obj, s_idx, epsilon)
             % 默认 epsilon = 1 (随机游走)
             if nargin < 3, epsilon = 1.0; end
