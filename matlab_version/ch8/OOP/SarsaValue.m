@@ -1,4 +1,5 @@
-classdef SarsaValue < handle
+classdef SarsaValue < handle   
+    % 
     % SarsaValue: 基于线性动作值函数近似的Sarsa算法
     % 支持：linear, quadratic, custom, fourier
     % 更新：使用 for 循环控制最大步数 (PE_lenMax)
@@ -8,7 +9,7 @@ classdef SarsaValue < handle
         basis_type      % 基函数类型
         state_dim       % 状态特征维度
         total_dim       % 总权重维度
-        phi_state_func  % 状态基函数句柄
+        phi_action_func  % 状态基函数句柄
         
         omega           % 权重向量 w
         gamma           % 折扣因子
@@ -32,14 +33,14 @@ classdef SarsaValue < handle
             
             % 1. 定义状态基函数 phi_s(x,y)
             switch basis_type
-                case 'linear'
-                    obj.phi_state_func = @(x, y) [1; x; y];
-                    obj.state_dim = 3;
+                % case 'linear'  % 这样定义基函数将会导致耦合 不一定能够搞出一个比较好的结果
+                %     obj.phi_action_func = @(x, y, a) [1; x; y; a];
+                %     obj.state_dim = 4;
                 case 'quadratic'
-                    obj.phi_state_func = @(x, y) [1; x; y; x^2; y^2; x*y];
+                    obj.phi_action_func = @(x, y) [1; x; y; x^2; y^2; x*y];
                     obj.state_dim = 6;
                 case 'custom'
-                    obj.phi_state_func = @(x, y) [1; x; y; sin(pi*x/5); sin(pi*y/5)];
+                    obj.phi_action_func = @(x, y) [1; x; y; sin(pi*x/5); sin(pi*y/5)];
                     obj.state_dim = 5;
                 case 'fourier'
                     order = 5; 
@@ -49,7 +50,7 @@ classdef SarsaValue < handle
                     
                     x_len = obj.env.X_Length;
                     y_len = obj.env.Y_Length;
-                    obj.phi_state_func = @(x, y) obj.fourier_basis_calc(x, y, x_len, y_len);
+                    obj.phi_action_func = @(x, y) obj.fourier_basis_calc(x, y, x_len, y_len);
                 otherwise
                     error('未知的 basis_type');
             end
@@ -68,7 +69,7 @@ classdef SarsaValue < handle
         end
         
         function phi_sa = get_feature(obj, x, y, a_idx)
-            phi_s = obj.phi_state_func(x, y);
+            phi_s = obj.phi_action_func(x, y);
             phi_sa = zeros(obj.total_dim, 1);
             start_idx = (a_idx - 1) * obj.state_dim + 1;
             end_idx = a_idx * obj.state_dim;
