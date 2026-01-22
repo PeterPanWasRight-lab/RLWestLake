@@ -24,34 +24,55 @@ agent.train(1000); % 这种结构收敛可能稍慢，增加回合数
 policy = agent.get_policy_matrix();
 env.plot_policy_matrix(policy);
 %%
-% 清空工作区
+% 清理旧数据，防止类定义冲突%类里应该有动态申请内存，越跑越慢
+clear classes; 
 clear; clc; close all;
 
-% 1. 定义环境参数
-X_Len = 6;
-Y_Len = 6;
-Start = [1, 1];
-Target = [4, 4];
-% 设置一些障碍物
-Obstacles = [
-    2, 2;
-    2, 3;
-    3, 2;
-    4, 2;
-    4, 5
-];
+% 1. 环境参数
+% x_len = 2; y_len = 3;
+% start = [1, 1]; final = [2,3];
+% obs = [2,2];
 
-% 2. 创建环境
-env = GridWorld(X_Len, Y_Len, Start, Target, Obstacles);
+x_len = 5; y_len = 5;
+start = [1, 1]; final = [3, 4];
+obs = [2,2; 3,2; 3,3; 2,4; 4,4; 2,5];
 
-% 3. 创建基于 Toolbox 的 Agent
-% 注意：这里调用的是我们新写的类 DQN_Toolbox_Agent
+% 2. 初始化
+env = GridWorld(x_len, y_len, start, final, obs);
 agent = DQN_Toolbox_Agent(env);
 
-% 4. 开始训练
-% 建议训练 500-1000 回合以查看明显效果
-MAX_EPISODES = 500; 
+% 3. 训练 (建议 1000 回合)
+% 你会看到 "Total Reward" 慢慢从负数变成正数
+MAX_EPISODES = 1000; 
 agent.train(MAX_EPISODES);
+
+%% --- 可视化结果 ---
+fprintf('正在绘制结果...\n');
+
+% 1. 策略箭头图
+policy_mat = agent.get_policy_matrix();
+env.plot_policy_matrix(policy_mat);
+
+% 2. 3D 价值分布图
+state_values = agent.get_value_vector();
+env.plot_3d_bar_chart(state_values);
+
+% 3. 最终路径测试
+path_indices = [env.coord2idx(env.Start_State)];
+curr_coord = env.Start_State;
+agent.epsilon = 0; % 关闭随机探索
+
+for i = 1:50
+    s_norm = agent.normalize_state(curr_coord);
+    a_idx = agent.choose_action(s_norm);
+    
+    [next_idx, ~, is_done] = env.step(env.coord2idx(curr_coord), a_idx);
+    curr_coord = env.idx2coord(next_idx);
+    path_indices(end+1) = next_idx;
+    
+    if is_done, break; end
+end
+env.plot_trajectory(path_indices);
 
 %% --- 训练后可视化 ---
 
