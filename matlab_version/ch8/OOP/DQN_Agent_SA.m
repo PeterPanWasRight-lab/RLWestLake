@@ -9,11 +9,11 @@ classdef DQN_Agent_SA < handle
         gamma = 0.9;
         alpha = 0.001;  % 学习率
         epsilon = 1.0;
-        epsilon_min = 0.001;
+        epsilon_min = 0.01;
         epsilon_decay = 0.995;
         batch_size = 64;
         buffer_size = 5000;
-        target_update_freq = 200; 
+        target_update_freq = 800; 
         
         % --- 网络参数 ---
         % layer_sizes 结构示例: [3, 24, 24, 1] 
@@ -80,7 +80,7 @@ classdef DQN_Agent_SA < handle
                 is_done = false;
                 steps = 0;
                 
-                while ~is_done && steps < 200
+                while steps < 200
                     steps = steps + 1;
                     obj.step_counter = obj.step_counter + 1;
                     
