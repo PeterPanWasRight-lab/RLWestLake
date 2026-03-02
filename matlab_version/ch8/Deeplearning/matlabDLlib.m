@@ -32,6 +32,7 @@ lambda = 0.001; % L2正则化系数
 
 % 定义模型损失函数（用于dlfeval）
 function [loss, gradients] = modelLoss(net, X, Y, lambda)
+    % modelloss上一层dlfevel中利用此处的代码表达式已经建立了一个计算图。
     % 前向传播
     Y_pred = forward(net, X);
     
@@ -51,6 +52,7 @@ function [loss, gradients] = modelLoss(net, X, Y, lambda)
     % 计算梯度   利用计算图求自动微分。但是计算图依赖于dlfevel建立。
     % 建立好计算图后，loss这个变量会记录这个终点节点的值和节点的位置
     % dlgradient只负责链式法则求导。至于这个链条长什么样由dlfevel来负责输出。
+    % 另外dlgradient只能对标量loss进行求梯度。非标量需要转化一下，具体看函数内部例子
     gradients = dlgradient(loss, net.Learnables);
 end
 
@@ -84,6 +86,7 @@ for epoch = 1:numEpochs
         y_batch = dlarray(y_batch_data, 'CB'); % 形状为[1, batchSize]
 
         % 使用dlfeval计算损失和梯度
+        % 此处返回的gradients就是内部dlgradient得到的grad
         [loss, gradients] = dlfeval(@modelLoss, net, x_batch, y_batch, lambda);
         epochLoss = epochLoss + extractdata(loss);
         numBatches = numBatches + 1;
