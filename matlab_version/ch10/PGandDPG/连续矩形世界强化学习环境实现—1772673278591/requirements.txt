@@ -1,0 +1,12 @@
+# 连续矩形世界强化学习环境依赖
+# Continuous Mountain World Reinforcement Learning Environment Dependencies
+
+# 核心依赖
+gymnasium>=0.26.0
+numpy>=1.21.0
+matplotlib>=3.5.0
+
+# 可选依赖（用于更高级的功能）
+# scipy>=1.7.0  # 如果需要更复杂的数值计算
+# torch>=1.9.0  # 如果需要PyTorch集成
+# tensorflow>=2.6.0  # 如果需要TensorFlow集成
