@@ -136,6 +136,23 @@ grid on; %[output:6e13add1]
 %% LQR 算出Klqr  只辨识H矩阵的simulink测试
 Herror = [1 1 1;1  1 1;1 1 1]*20 %[output:558656d0]
 
+%%
+% 在 MATLAB 工作空间初始化网络参数
+state_dim = 2;
+action_dim = 1;
+hidden_dim = 10;
+
+% Critic 网络参数初始化
+critic_params_init.W1_c = 0.1 * randn(hidden_dim, state_dim + action_dim);
+critic_params_init.b1_c = zeros(hidden_dim, 1);
+critic_params_init.W2_c = 0.1 * randn(hidden_dim, hidden_dim);
+critic_params_init.b2_c = zeros(hidden_dim, 1);
+critic_params_init.W3_c = 0.1 * randn(1, hidden_dim);
+critic_params_init.b3_c = 0;
+
+% Actor 网络参数初始化
+actor_params_init.K = 0.1 * randn(action_dim, state_dim);
+
 %[appendix]{"version":"1.0"}
 %---
 %[metadata:view]

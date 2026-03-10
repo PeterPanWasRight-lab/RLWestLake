@@ -1,0 +1,11 @@
+-ID:/RL/RLWestLake/matlab_version/ch10/DPG/simulinkDPGtest
+-ID:/RL/RLWestLake/matlab_version/ch10/DPG/simulinkDPGtest/slprj/raccel/DPGandLQRsimOnlyIdentH
+-IC:/APPS/MATLAB/setup/rtw/c/src/rapid
+-IC:/APPS/MATLAB/setup/rtw/c/raccel
+-IC:/APPS/MATLAB/setup/rtw/c/src/ext_mode/common
+-IC:/APPS/MATLAB/setup/toolbox/coder/rtiostream/src
+-IC:/APPS/MATLAB/setup/extern/include
+-IC:/APPS/MATLAB/setup/simulink/include
+-IC:/APPS/MATLAB/setup/rtw/c/src
+-IC:/APPS/MATLAB/setup/toolbox/coder/rtiostream/src/rtiostreamtcpip
+-IC:/APPS/MATLAB/setup/toolbox/coder/rtiostream/src/utils
