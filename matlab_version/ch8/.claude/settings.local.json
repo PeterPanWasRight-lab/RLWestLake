@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(matlab -batch \"fprintf\\(''MATLAB test\\\\n''\\)\")",
+      "Bash(matlab -batch \"DQN_NN_reward_test\")",
+      "Bash(matlab -batch \"DQN_NN_combined_test\")",
+      "Bash(matlab -batch \"DQN_NN_optimized\")",
+      "Bash(matlab -batch \"try, run\\(''DQN_NN/test_basic.m''\\), catch ME, disp\\(ME.message\\), exit\\(1\\), end\")",
+      "Bash(matlab -batch \"try, run\\(''DQN_NN/test_algorithm84.m''\\), catch ME, disp\\(ME.message\\), exit\\(1\\), end\")"
+    ]
+  }
+}
